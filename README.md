@@ -1,0 +1,2 @@
+# cdrview-manager
+
