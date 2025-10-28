@@ -1,0 +1,181 @@
+/* reset básico e layout principal */
+body, html, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: #f8f9fa;
+}
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* sidebar */
+.sidebar {
+  width: 260px;
+  background-color: #343a40; /* cinza escuro */
+  color: #adb5bd; /* cinza claro p texto */
+  padding: 20px;
+  flex-shrink: 0;
+}
+
+.sidebar h1 {
+  font-size: 1.5rem;
+  color: white;
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  padding: 12px 0;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.sidebar li:hover {
+  color: white;
+}
+
+.sidebar li.active {
+  color: white;
+  font-weight: 600;
+}
+
+/* área de conteúdo */
+.content-area {
+  flex-grow: 1;
+  padding: 30px 40px;
+  background-color: white;
+}
+
+.list-processes-container h2 {
+  font-size: 2rem;
+  font-weight: 500;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.main-search-bar {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 25px;
+  box-sizing: border-box;
+}
+
+/* controles da tabela (show e search) */
+.table-controls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.table-controls select,
+.table-controls input[type="text"] {
+  margin: 0 8px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* tabela principal */
+.processes-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.processes-table th,
+.processes-table td {
+  border: 1px solid #e0e0e0;
+  padding: 12px 15px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.processes-table th {
+  background-color: #f9f9f9;
+  font-weight: 600;
+  color: #444;
+}
+
+/* badge de status */
+.status-badge {
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+  text-transform: capitalize;
+}
+
+.status-running {
+  background-color: #28a745; 
+}
+
+.status-stopped {
+  background-color: #6c757d; 
+}
+
+.status-error {
+  background-color: #dc3545; 
+}
+
+.details-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.details-button:hover {
+  background-color: #0056b3;
+}
+
+/* rodpaé da tabela */
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  margin-left: 5px;
+  border: 1px solid #ddd;
+  background-color: white;
+  cursor: pointer;
+}
+
+.pagination button.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.pagination button:disabled {
+  color: #aaa;
+  cursor: not-allowed;
+}
