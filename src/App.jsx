@@ -1,21 +1,20 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
-import StopProcess from "./pages/StopProcess";
+import { Link } from "react-router-dom";
 
-function App() {
+const Sidebar = () => {
   return (
-    <Router>
-      <div className="flex min-h-screen">
-        <Sidebar />
-        <main className="flex-1 bg-gray-50 p-6">
-          <Routes>
-            <Route path="/stop" element={<StopProcess />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <aside className="w-64 bg-gray-900 text-white min-h-screen p-4">
+      <h2 className="text-2xl font-bold mb-6">CDRView Manager</h2>
+      <nav className="flex flex-col gap-2">
+        <Link
+          to="/stop"
+          className="hover:bg-gray-700 px-3 py-2 rounded transition"
+        >
+          Stop Processes
+        </Link>
+      </nav>
+    </aside>
   );
-}
+};
 
-export default App;
+export default Sidebar;
