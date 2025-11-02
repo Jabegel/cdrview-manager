@@ -6,6 +6,7 @@ const StopProcess = () => {
   const [processes, setProcesses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [confirmProcess, setConfirmProcess] = useState(null);
+  const [stopMode, setStopMode] = useState("pid"); // modo de parada
   const API_BASE = "http://127.0.0.1:6869/cdrview/processo";
 
   useEffect(() => {
@@ -24,9 +25,40 @@ const StopProcess = () => {
     }
   };
 
+  const buildPayload = (process) => {
+    if (stopMode === "pid") {
+      return {
+        parar: [
+          {
+            hosts: process.host,
+            processo: process.name,
+            pid: process.pid?.toString(),
+          },
+        ],
+      };
+    } else if (stopMode === "host") {
+      return {
+        parar: [
+          {
+            hosts: process.host,
+            processo: process.name,
+          },
+        ],
+      };
+    } else {
+      // global
+      return {
+        parar: [
+          {
+            processo: process.name,
+          },
+        ],
+      };
+    }
+  };
+
   const stopProcess = async (process, force = false) => {
     try {
-      // Atualiza status visual para "Stopping"
       setProcesses((prev) =>
         prev.map((p) =>
           p.name === process.name ? { ...p, status: "Stopping" } : p
@@ -34,19 +66,10 @@ const StopProcess = () => {
       );
 
       const endpoint = force ? `${API_BASE}/forcar` : `${API_BASE}/parar`;
-      const payload = {
-        parar: [
-          {
-            hosts: process.host,
-            processo: process.name,
-            pid: process.pid,
-          },
-        ],
-      };
+      const payload = buildPayload(process);
 
       await axios.post(endpoint, payload);
 
-      // Atualiza status visual para "Stopped"
       setProcesses((prev) =>
         prev.map((p) =>
           p.name === process.name ? { ...p, status: "Stopped" } : p
@@ -68,6 +91,19 @@ const StopProcess = () => {
   return (
     <div className="stop-page">
       <h1 className="page-title">Parar Processos</h1>
+
+      <div className="mode-selector">
+        <label htmlFor="mode">Modo de parada:</label>
+        <select
+          id="mode"
+          value={stopMode}
+          onChange={(e) => setStopMode(e.target.value)}
+        >
+          <option value="pid">Por PID</option>
+          <option value="host">Por Host</option>
+          <option value="global">Global (todas as máquinas)</option>
+        </select>
+      </div>
 
       {loading ? (
         <p>Carregando processos...</p>
