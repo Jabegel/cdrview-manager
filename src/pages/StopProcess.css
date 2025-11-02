@@ -112,3 +112,30 @@
 .btn-confirm:hover {
   background-color: #c82333;
 }
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-force {
+  background-color: #dc3545;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-force:hover {
+  background-color: #b02a37;
+}
+
+.status-badge.stopping {
+  background-color: #ffc107;
+  color: #222;
+}
+
+.status-badge.stopped {
+  background-color: #6c757d;
+}

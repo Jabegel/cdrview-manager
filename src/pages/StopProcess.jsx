@@ -6,7 +6,7 @@ const StopProcess = () => {
   const [processes, setProcesses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [confirmProcess, setConfirmProcess] = useState(null);
-  const API_BASE = "http://localhost:6869/cdrview/processo";
+  const API_BASE = "http://127.0.0.1:6869/cdrview/processo";
 
   useEffect(() => {
     fetchProcesses();
@@ -24,8 +24,16 @@ const StopProcess = () => {
     }
   };
 
-  const stopProcess = async (process) => {
+  const stopProcess = async (process, force = false) => {
     try {
+      // Atualiza status visual para "Stopping"
+      setProcesses((prev) =>
+        prev.map((p) =>
+          p.name === process.name ? { ...p, status: "Stopping" } : p
+        )
+      );
+
+      const endpoint = force ? `${API_BASE}/forcar` : `${API_BASE}/parar`;
       const payload = {
         parar: [
           {
@@ -35,10 +43,22 @@ const StopProcess = () => {
           },
         ],
       };
-      await axios.post(`${API_BASE}/parar`, payload);
-      alert(`Processo ${process.name} parado com sucesso!`);
+
+      await axios.post(endpoint, payload);
+
+      // Atualiza status visual para "Stopped"
+      setProcesses((prev) =>
+        prev.map((p) =>
+          p.name === process.name ? { ...p, status: "Stopped" } : p
+        )
+      );
+
+      alert(
+        `Processo ${process.name} ${
+          force ? "forçado a parar" : "parado"
+        } com sucesso!`
+      );
       setConfirmProcess(null);
-      fetchProcesses();
     } catch (error) {
       console.error("Erro ao parar processo:", error);
       alert("Erro ao parar o processo.");
@@ -60,7 +80,7 @@ const StopProcess = () => {
                 <th>Processo</th>
                 <th>PID</th>
                 <th>Status</th>
-                <th>Ação</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -73,18 +93,32 @@ const StopProcess = () => {
                     <td>
                       <span
                         className={`status-badge ${
-                          proc.status === "Running" ? "running" : "stopped"
+                          proc.status === "Running"
+                            ? "running"
+                            : proc.status === "Stopping"
+                            ? "stopping"
+                            : "stopped"
                         }`}
                       >
-                        {proc.status === "Running" ? "Rodando" : "Parado"}
+                        {proc.status === "Running"
+                          ? "Rodando"
+                          : proc.status === "Stopping"
+                          ? "Parando..."
+                          : "Parado"}
                       </span>
                     </td>
-                    <td>
+                    <td className="action-buttons">
                       <button
                         className="btn-stop"
                         onClick={() => setConfirmProcess(proc)}
                       >
                         Parar
+                      </button>
+                      <button
+                        className="btn-force"
+                        onClick={() => stopProcess(proc, true)}
+                      >
+                        Forçar
                       </button>
                     </td>
                   </tr>
