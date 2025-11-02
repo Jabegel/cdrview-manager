@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "./StopProcess.css";
 
 const StopProcess = () => {
   const [processes, setProcesses] = useState([]);
@@ -30,87 +31,95 @@ const StopProcess = () => {
           {
             hosts: process.host,
             processo: process.name,
-            pid: process.pid
-          }
-        ]
+            pid: process.pid,
+          },
+        ],
       };
       await axios.post(`${API_BASE}/parar`, payload);
-      alert(`Process ${process.name} stopped successfully!`);
+      alert(`Processo ${process.name} parado com sucesso!`);
       setConfirmProcess(null);
       fetchProcesses();
     } catch (error) {
       console.error("Erro ao parar processo:", error);
-      alert("Error stopping process.");
+      alert("Erro ao parar o processo.");
     }
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-semibold mb-6 text-gray-800">Stop Processes</h1>
+    <div className="stop-page">
+      <h1 className="page-title">Parar Processos</h1>
+
       {loading ? (
-        <p>Loading processes...</p>
+        <p>Carregando processos...</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full border border-gray-300 rounded-lg">
-            <thead className="bg-gray-800 text-white">
+        <div className="table-container">
+          <table className="process-table">
+            <thead>
               <tr>
-                <th className="p-2">Host</th>
-                <th className="p-2">Process</th>
-                <th className="p-2">PID</th>
-                <th className="p-2">Status</th>
-                <th className="p-2">Action</th>
+                <th>Host</th>
+                <th>Processo</th>
+                <th>PID</th>
+                <th>Status</th>
+                <th>Ação</th>
               </tr>
             </thead>
             <tbody>
               {processes.length > 0 ? (
-                processes.map((proc, i) => (
-                  <tr key={i} className="text-center border-b hover:bg-gray-100">
-                    <td className="p-2">{proc.host}</td>
-                    <td className="p-2">{proc.name}</td>
-                    <td className="p-2">{proc.pid}</td>
-                    <td className="p-2 text-green-600 font-medium">{proc.status}</td>
-                    <td className="p-2">
-                      <button
-                        onClick={() => setConfirmProcess(proc)}
-                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+                processes.map((proc, index) => (
+                  <tr key={index}>
+                    <td>{proc.host}</td>
+                    <td>{proc.name}</td>
+                    <td>{proc.pid}</td>
+                    <td>
+                      <span
+                        className={`status-badge ${
+                          proc.status === "Running" ? "running" : "stopped"
+                        }`}
                       >
-                        Stop
+                        {proc.status === "Running" ? "Rodando" : "Parado"}
+                      </span>
+                    </td>
+                    <td>
+                      <button
+                        className="btn-stop"
+                        onClick={() => setConfirmProcess(proc)}
+                      >
+                        Parar
                       </button>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="p-4 text-gray-500">
-                    No processes running.
-                  </td>
+                  <td colSpan="5">Nenhum processo encontrado.</td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
       )}
+
       {confirmProcess && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-lg font-bold mb-3">Confirm Stop</h2>
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>Confirmar Ação</h3>
             <p>
-              Are you sure you want to stop{" "}
-              <strong>{confirmProcess.name}</strong> on{" "}
+              Deseja realmente parar o processo{" "}
+              <strong>{confirmProcess.name}</strong> no host{" "}
               <strong>{confirmProcess.host}</strong>?
             </p>
-            <div className="flex justify-end gap-4 mt-5">
+            <div className="modal-actions">
               <button
+                className="btn-cancel"
                 onClick={() => setConfirmProcess(null)}
-                className="bg-gray-300 px-4 py-1 rounded hover:bg-gray-400"
               >
-                Cancel
+                Cancelar
               </button>
               <button
+                className="btn-confirm"
                 onClick={() => stopProcess(confirmProcess)}
-                className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700"
               >
-                Confirm
+                Confirmar
               </button>
             </div>
           </div>

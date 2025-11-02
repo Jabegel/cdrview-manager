@@ -2,13 +2,14 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar.jsx";
 import StopProcess from "./pages/StopProcess.jsx";
+import "./App.css";
 
 function App() {
   return (
     <Router>
-      <div className="flex min-h-screen">
+      <div className="container">
         <Sidebar />
-        <main className="flex-1 bg-gray-50 p-6">
+        <main className="content">
           <Routes>
             <Route path="/stop" element={<StopProcess />} />
           </Routes>
