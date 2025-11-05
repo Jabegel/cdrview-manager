@@ -1,13 +1,179 @@
 <!doctype html>
-<html lang="en">
+<html  class="light" lang="pt-BR"">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" /> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>client</title>
+
+     <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    
+    <!-- CSS Customizado -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    
+    <!-- Configuração do Tailwind -->
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#007fff",
+                        "secondary": "#ff6b35",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "success": "#10b981",
+                        "warning": "#f59e0b",
+                        "error": "#ef4444"
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.375rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-down': 'slideDown 0.3s ease-out',
+                        'pulse-slow': 'pulse 2s infinite',
+                    }
+                },
+            },
+        }
+    </script>
   </head>
-  <body>
+  <body class="bg-background-light dark:bg-background-dark font-display">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    
+     <div class="relative flex min-h-screen w-full">
+        <!-- SideNavBar -->
+        <aside class="flex h-screen w-64 flex-col bg-[#2C2F33] p-4 text-white sticky top-0 z-40">
+            <div class="flex flex-col gap-8">
+                <div class="flex items-center gap-3 px-3 pt-2">
+                    <span class="material-symbols-outlined text-primary">monitoring</span>
+                    <h1 class="text-white text-xl font-bold leading-normal">CDRView Manager</h1>
+                </div>
+                
+                <nav class="flex flex-col gap-2">
+                    <a class="nav-item active flex items-center gap-3 rounded-lg bg-primary/30 px-3 py-2 transition-all hover:bg-primary/40 hover-lift" href="#" data-page="start">
+                        <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+                        <p class="text-white text-sm font-medium leading-normal">Iniciar Processos</p>
+                    </a>
+                    <a class="nav-item flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:bg-white/10 hover-lift" href="#" data-page="stop">
+                        <span class="material-symbols-outlined text-white">stop_circle</span>
+                        <p class="text-white text-sm font-medium leading-normal">Parar Processos</p>
+                    </a>
+                    <a class="nav-item flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:bg-white/10 hover-lift" href="#" data-page="list">
+                        <span class="material-symbols-outlined text-white">list_alt</span>
+                        <p class="text-white text-sm font-medium leading-normal">Listar Processos</p>
+                    </a>
+                </nav>
+
+                <!-- Status do Sistema -->
+                <div class="mt-8 p-4 rounded-lg glass-effect">
+                    <h3 class="text-sm font-semibold mb-2">Status do Sistema</h3>
+                    <div class="flex items-center gap-2 text-sm">
+                        <div class="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+                        <span>Online</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 bg-white dark:bg-[#1e1e1e] min-h-screen">
+            <div class="flex flex-col p-8 space-y-8">
+                <!-- Notificações -->
+                <div id="notification-container" class="fixed top-5 right-5 z-50 space-y-3"></div>
+
+                <!-- PageHeading -->
+                <div class="flex items-center justify-between animate-fade-in">
+                    <div>
+                        <h1 class="text-slate-800 dark:text-slate-100 text-4xl font-black leading-tight tracking-[-0.033em]">Iniciar Processos</h1>
+                        <p class="text-slate-600 dark:text-slate-400 mt-2">Gerencie e inicie processos do sistema</p>
+                    </div>
+                    <button id="theme-toggle" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                        <span class="material-symbols-outlined text-slate-600 dark:text-slate-400">dark_mode</span>
+                    </button>
+                </div>
+
+                <!-- Form Section -->
+                <div class="flex flex-col gap-6 max-w-2xl animate-slide-down">
+                    <!-- ID da Máquina -->
+                    <label class="flex flex-col">
+                        <p class="text-slate-800 dark:text-slate-200 text-base font-medium leading-normal pb-2 flex items-center gap-2">
+                            ID da Máquina
+                            <span class="text-xs text-slate-500">(Obrigatório)</span>
+                        </p>
+                        <input 
+                            id="machine-id"
+                            class="form-input" 
+                            placeholder="Digite o ID da máquina" 
+                            value=""
+                        />
+                        <span class="text-xs text-slate-500 mt-1">Ex: MACH-001, SERVER-02</span>
+                    </label>
+
+                    <!-- Tipo de Processo -->
+                    <label class="flex flex-col">
+                        <p class="text-slate-800 dark:text-slate-200 text-base font-medium leading-normal pb-2">Tipo de Processo</p>
+                        <select id="process-type" class="form-select">
+                            <option value="cdr_analysis">CDR Analysis</option>
+                            <option value="log_parsing">Log Parsing</option>
+                            <option value="data_sync">Data Sync</option>
+                            <option value="report_generation">Report Generation</option>
+                        </select>
+                    </label>
+
+                    <!-- Parametros -->
+                    <label class="flex flex-col">
+                        <p class="text-slate-800 dark:text-slate-200 text-base font-medium leading-normal pb-2 flex items-center gap-2">
+                            Parâmetros
+                            <span class="text-xs text-slate-500">(Opcional)</span>
+                        </p>
+                        <textarea 
+                            id="parameters"
+                            class="form-textarea" 
+                            placeholder="Insira os parâmetros aqui no formato JSON ou chave=valor"
+                        ></textarea>
+                    </label>
+
+                    <!-- Processos Recentes -->
+                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 mt-4">
+                        <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-3">Processos Recentes</h3>
+                        <div id="recent-processes" class="space-y-2">
+                            <!-- Será preenchido via JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="pt-6">
+                        <button id="start-process-btn" class="btn-primary">
+                            <span>Iniciar Processo</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/state-manager.js"></script>
+    <script src="js/notification-system.js"></script>
+    <script src="js/form-validator.js"></script>
+    <script src="js/theme-manager.js"></script>
+    <script src="js/app.js"></script>
   </body>
 </html>
