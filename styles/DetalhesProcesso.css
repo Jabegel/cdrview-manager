@@ -1,0 +1,34 @@
+.detalhes-container{
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.info-card{
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.status.success{
+    color: green;
+    font-weight: bold;
+}
+
+.logs ul{
+    list-style: none;
+    padding: 0;
+}
+
+.logs li{
+    margin-bottom:8px;
+}
+
+.log .error{
+    color: red;
+}
+
+.log .success{
+    color: green;
+}
