@@ -1,81 +1,128 @@
-// server/index.js
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
 
 dotenv.config();
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ⚙️ Configurações básicas
-const PORT = process.env.PORT || 4000;
+// Configuração do host CDRView (pode ser alterado via variável de ambiente)
+const CDRVIEW_HOST = process.env.CDRVIEW_HOST || "localhost:6869";
 
-// 🧠 Banco de dados em memória (simulação)
+// Armazenamento em memória dos processos (em produção, usar banco de dados)
 let processos = [];
+let processoIdCounter = 1;
 
-// 🟢 STATUS DO SISTEMA
-app.get('/api/status', (req, res) => {
+// Rota de saúde
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok", time: new Date().toISOString() });
+});
+
+// Rota para iniciar processo
+app.post("/api/processo/iniciar", async (req, res) => {
+  try {
+    const { machineId, processType, parameters } = req.body;
+
+    // Validação básica
+    if (!processType) {
+      return res.status(400).json({ 
+        success: false, 
+        error: "Tipo de processo é obrigatório" 
+      });
+    }
+
+    // Preparar dados para enviar ao CDRView
+    const payload = {
+      machineId: machineId || null,
+      processType,
+      parameters: parameters || {}
+    };
+
+    // Fazer requisição ao endpoint CDRView
+    const cdrviewUrl = `http://${CDRVIEW_HOST}/cdrview/processo/iniciar`;
+    
+    // Simulação de resposta (em produção, fazer fetch real)
+    // const response = await fetch(cdrviewUrl, {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(payload)
+    // });
+    // const data = await response.json();
+
+    // Para demonstração, criar processo localmente
+    const novoProcesso = {
+      id: processoIdCounter++,
+      machineId: machineId || "N/A",
+      processType,
+      parameters,
+      status: "iniciado",
+      createdAt: new Date().toISOString(),
+      cdrviewUrl
+    };
+
+    processos.unshift(novoProcesso);
+
+    res.json({
+      success: true,
+      message: "Processo iniciado com sucesso",
+      processo: novoProcesso
+    });
+
+  } catch (error) {
+    console.error("Erro ao iniciar processo:", error);
+    res.status(500).json({
+      success: false,
+      error: "Erro ao iniciar processo",
+      details: error.message
+    });
+  }
+});
+
+// Rota para listar processos
+app.get("/api/processos", (_req, res) => {
   res.json({
     success: true,
-    status: 'online',
-    maquinasOnline: 4,
-    timestamp: new Date().toISOString(),
+    processos: processos.slice(0, 50) // Limitar a 50 processos mais recentes
   });
 });
 
-// 🚀 INICIAR PROCESSO
-app.post('/api/processo/iniciar', (req, res) => {
-  const { host, processo, argumento } = req.body;
+// Rota para parar processo
+app.post("/api/processo/parar/:id", (req, res) => {
+  const { id } = req.params;
+  const processo = processos.find(p => p.id === parseInt(id));
 
-  if (!host || !processo) {
-    return res.status(400).json({ success: false, error: 'Host e processo são obrigatórios' });
+  if (!processo) {
+    return res.status(404).json({
+      success: false,
+      error: "Processo não encontrado"
+    });
   }
 
-  const novoProcesso = {
-    id: Math.floor(Math.random() * 100000).toString(),
-    host,
-    machineId: host,
-    processType: processo,
-    argumento: argumento || '',
-    status: 'iniciado',
-    createdAt: new Date().toISOString(),
-    stoppedAt: null,
-    parameters: argumento ? { argumento } : {},
-  };
+  processo.status = "parado";
+  processo.stoppedAt = new Date().toISOString();
 
-  processos.unshift(novoProcesso);
-  console.log(`✅ Processo iniciado localmente: ${processo} em ${host}`);
-  res.json({ success: true, processo: novoProcesso });
-});
-
-// 🛑 PARAR PROCESSO
-app.post('/api/processo/parar', (req, res) => {
-  const { parar } = req.body;
-  if (!parar || !Array.isArray(parar)) {
-    return res.status(400).json({ success: false, error: 'Formato inválido. Use { parar: [ { pid } ] }' });
-  }
-
-  parar.forEach((item) => {
-    const pid = item.pid?.toString();
-    const p = processos.find((proc) => proc.id === pid);
-    if (p) {
-      p.status = 'parado';
-      p.stoppedAt = new Date().toISOString();
-    }
+  res.json({
+    success: true,
+    message: "Processo parado com sucesso",
+    processo
   });
-
-  console.log(`🟥 Processos parados: ${parar.map(p => p.pid).join(', ')}`);
-  res.json({ success: true });
 });
 
-// 📋 LISTAR PROCESSOS
-app.post('/api/processo/listar', (req, res) => {
-  res.json({ success: true, processos });
+// Rota para obter status do sistema
+app.get("/api/status", (_req, res) => {
+  res.json({
+    success: true,
+    status: "online",
+    processosAtivos: processos.filter(p => p.status === "iniciado").length,
+    totalProcessos: processos.length,
+    cdrviewHost: CDRVIEW_HOST
+  });
 });
 
-// 🚀 Servidor online
-app.listen(PORT, () => {
-  console.log(`✅ Backend local CDRView Manager rodando em http://localhost:${PORT}`);
-  console.log('📡 Modo simulado (sem conexão externa)');
+const port = process.env.PORT || 4000;
+app.listen(port, () => {
+  console.log(`🚀 Backend CDRView Manager rodando em http://localhost:${port}`);
+  console.log(`📡 CDRView Host configurado: ${CDRVIEW_HOST}`);
 });

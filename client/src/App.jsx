@@ -12,15 +12,16 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
-  const [backendHost, setBackendHost] = useState('http://localhost:6869');
-  const API_BASE = `${backendHost}/cdrview`;
+  const MODE = 'local'; 
+  const backendHost = MODE === 'local' ? 'http:
+  const API_BASE = `${backendHost}`;
 
-  // Carregar status do sistema
+  
   useEffect(() => {
     fetchSystemStatus();
   }, []);
 
-  // Carregar processos quando mudar para a view de listar
+  
   useEffect(() => {
     if (activeView === 'listar') {
       fetchProcessos();
@@ -29,7 +30,7 @@ function App() {
 
   const fetchSystemStatus = async () => {
     try {
-      // tenta endpoint /status primeiro
+      
       const resp = await axios.get(`${backendHost}/status`);
       const data = resp.data;
       if (data && data.status) {
@@ -37,12 +38,12 @@ function App() {
         return;
       }
     } catch (err) {
-      // ignore and fallback to listar
+      
     }
     try {
       const resp = await axios.post(`${API_BASE}/processo/listar`, {});
       const data = resp.data;
-      // monta um status simples a partir da lista
+      
       const maquinas = Array.isArray(data.processos) ? data.processos.map(p=>p.machineId) : [];
       setSystemStatus({ status: 'online', maquinasOnline: [...new Set(maquinas)].length });
     } catch (error) {
@@ -69,13 +70,13 @@ function App() {
     setMessage(null);
 
     try {
-      // Tentar parsear parâmetros como JSON
+      
       let parsedParams = {};
       if (parameters.trim()) {
         try {
           parsedParams = JSON.parse(parameters);
         } catch {
-          // Se não for JSON, tentar parsear como chave=valor
+          
           const pairs = parameters.split(',').map(p => p.trim());
           pairs.forEach(pair => {
             const [key, value] = pair.split('=').map(s => s.trim());
@@ -102,10 +103,10 @@ function App() {
 
       if (data.success) {
         showMessage('Processo iniciado com sucesso!', 'success');
-        // Limpar formulário
+        
         setMachineId('');
         setParameters('');
-        // Adicionar processo à lista
+        
         setProcessos(prev => [data.processo, ...prev]);
       } else {
         showMessage(data.error || 'Erro ao iniciar processo', 'error');
@@ -144,7 +145,7 @@ function App() {
 
   return (
     <div className="app">
-      {/* Sidebar */}
+      {}
       <aside className="sidebar">
         <div className="sidebar-header">
           <div className="logo">
@@ -208,7 +209,7 @@ function App() {
         </div>
       </aside>
 
-      {/* Main Content */}
+      {}
       <main className="main-content">
         {message && (
           <div className={`message ${message.type}`}>
@@ -224,14 +225,14 @@ function App() {
             <form onSubmit={handleIniciarProcesso} className="form">
               <div className="form-group">
                 <label htmlFor="machineId">
-                  ID da Máquina <span className="optional">(Obrigatório)</span>
+                  ID da Mquina <span className="optional">(Obrigatrio)</span>
                 </label>
                 <input
                   type="text"
                   id="machineId"
                   value={machineId}
                   onChange={(e) => setMachineId(e.target.value)}
-                  placeholder="Digite o ID da máquina"
+                  placeholder="Digite o ID da mquina"
                   className="input"
                 />
                 <small className="help-text">Ex: MACH-001, SERVER-02</small>
@@ -254,13 +255,13 @@ function App() {
 
               <div className="form-group">
                 <label htmlFor="parameters">
-                  Parâmetros <span className="optional">(Opcional)</span>
+                  Parmetros <span className="optional">(Opcional)</span>
                 </label>
                 <textarea
                   id="parameters"
                   value={parameters}
                   onChange={(e) => setParameters(e.target.value)}
-                  placeholder="Insira os parâmetros aqui no formato JSON ou chave=valor"
+                  placeholder="Insira os parmetros aqui no formato JSON ou chave=valor"
                   className="textarea"
                   rows="5"
                 />
@@ -291,7 +292,7 @@ function App() {
         {activeView === 'parar' && (
           <div className="content-wrapper">
             <h1>Parar Processos</h1>
-            <p className="subtitle">Interrompa processos em execução</p>
+            <p className="subtitle">Interrompa processos em execuo</p>
 
             <div className="process-list">
               {processos.filter(p => p.status === 'iniciado').length === 0 ? (
@@ -299,7 +300,7 @@ function App() {
                   <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
                   </svg>
-                  <p>Nenhum processo em execução</p>
+                  <p>Nenhum processo em execuo</p>
                 </div>
               ) : (
                 processos
@@ -313,7 +314,7 @@ function App() {
                         </div>
                         <div className="process-details">
                           <span>ID: {processo.id}</span>
-                          <span>Máquina: {processo.machineId}</span>
+                          <span>Mquina: {processo.machineId}</span>
                           <span>Iniciado: {new Date(processo.createdAt).toLocaleString('pt-BR')}</span>
                         </div>
                       </div>
@@ -353,7 +354,7 @@ function App() {
                       </div>
                       <div className="process-details">
                         <span>ID: {processo.id}</span>
-                        <span>Máquina: {processo.machineId}</span>
+                        <span>Mquina: {processo.machineId}</span>
                         <span>Iniciado: {new Date(processo.createdAt).toLocaleString('pt-BR')}</span>
                         {processo.stoppedAt && (
                           <span>Parado: {new Date(processo.stoppedAt).toLocaleString('pt-BR')}</span>
@@ -361,7 +362,7 @@ function App() {
                       </div>
                       {processo.parameters && Object.keys(processo.parameters).length > 0 && (
                         <div className="process-params">
-                          <strong>Parâmetros:</strong> {JSON.stringify(processo.parameters)}
+                          <strong>Parmetros:</strong> {JSON.stringify(processo.parameters)}
                         </div>
                       )}
                     </div>
