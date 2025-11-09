@@ -5,42 +5,23 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+app.use(cors());           // como vamos usar proxy do Vite, isso fica tranquilo
+app.use(express.json());   // para JSON no body
 
-let processes = [
-  { host: "appl01", name: "ServicoIndexacao", pid: "2345", status: "Running" },
-  { host: "appl02", name: "ParserGsm.exe", pid: "4567", status: "Running" },
-  { host: "appl03", name: "ServicoBuscaIndice", pid: "6789", status: "Running" }
-];
-
-app.post("/cdrview/processo/listar", (req, res) => {
-  res.json({ processes });
+// rota de saúde
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok", time: new Date().toISOString() });
 });
 
-app.post("/cdrview/processo/parar", (req, res) => {
-  const { parar } = req.body;
-  if (!parar || !Array.isArray(parar)) {
-    return res.status(400).json({ error: "Formato inválido" });
-  }
-  parar.forEach((p) => {
-    processes = processes.filter((proc) => proc.name !== p.processo);
-  });
-  res.json({ success: true, message: "Processos parados com sucesso!" });
+// exemplo de API
+app.get("/api/todos", (_req, res) => {
+  res.json([
+    { id: 1, title: "Aprender Express", done: true },
+    { id: 2, title: "Integrar com React + Vite", done: false },
+  ]);
 });
 
-const port = process.env.PORT || 6869;
+const port = process.env.PORT || 4000;
 app.listen(port, () => {
-  console.log(`Backend rodando em http://localhost:${port}`);
-});
-
-app.post("/cdrview/processo/forcar", (req, res) => {
-  const { parar } = req.body;
-  if (!parar || !Array.isArray(parar)) {
-    return res.status(400).json({ error: "Formato inválido" });
-  }
-  parar.forEach((p) => {
-    processes = processes.filter((proc) => proc.name !== p.processo);
-  });
-  res.json({ success: true, message: "Processos forçados a parar!" });
+  console.log(`Backend ouvindo em http://localhost:${port}`);
 });
