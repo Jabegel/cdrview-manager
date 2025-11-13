@@ -1,0 +1,177 @@
+.layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  font-family: "Inter", sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background-color: #1e1e2f;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  flex-shrink: 0; 
+}
+
+.logo {
+  font-size: 1.3rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  width: 100%;
+}
+
+nav li {
+  text-align: center;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  transition: background 0.2s;
+}
+
+nav li:hover {
+  background: #2d2d42;
+}
+
+nav .active {
+  background: #0066ff;
+}
+
+.content {
+  flex: 1;
+  background-color: #ffffff;
+  padding: 2rem 3rem;
+  height: 100vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  color: #000;
+}
+
+/* Cabeçalho */
+.header {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  color: #000;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Botões */
+.actions button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.back {
+  display: infinite-block;
+  padding: 0.6rem 1.2rem;
+  background-color: #e6e6e6ff;
+  color: #000;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.back:hover {
+  background-color: #f0f0f0;
+  border-color: #a0a0a0;
+}
+
+.update {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.update:hover {
+  background-color: #0056b3;
+}
+
+/* Card de informações */
+.info-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12pxpx rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.info-card:hover {
+  transform: transletY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+.status.success {
+  background: #d1fae5;
+  color: #0f5132;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+/* Logs */
+.logs h2 {
+  margin-bottom: 1rem;
+  color: #000;
+}
+
+.log {
+  background: #fff;
+  padding: 0.9rem 1.2rem;
+  border-radius: 10px;
+  margin-bottom: 0.8rem;
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.log:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px rgba(0, 0, 0, 0.12);
+}
+
+.log-time {
+  font-weight: 600;
+  color: #555;
+  min-width: 80px;
+}
+
+.log.error {
+  border-left: 5px solid #ff4d4f;
+  color: #b10000;
+}
+
+.log.success {
+  border-left: 5px solid #22c55e;
+  color: #155724;
+}
