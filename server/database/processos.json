@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "configId": 1,
+    "pid": 1234,
+    "servidor": "host1",
+    "status": "running",
+    "inicio": "2025-10-31 10:00"
+  }
+]
