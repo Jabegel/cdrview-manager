@@ -1,0 +1,4 @@
+
+.sidebar {background:#1a3a5e;color:white;width:220px;min-height:100vh;padding:20px;}
+.nav-item {cursor:pointer;color:#ccc;padding:10px;border-radius:6px;}
+.nav-item:hover {background:#2c5a8a;color:white;}
