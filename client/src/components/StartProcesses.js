@@ -21,6 +21,9 @@ export default function StartProcesses() {
         // GARANTE QUE VAI VIR A LISTA
         if (h && Array.isArray(h.servidores)) {
           setHosts(h.servidores);
+          console.log("STATE HOSTS:", h.servidores);
+          alert("Carregou hosts: " + JSON.stringify(h.servidores));
+
         } else {
           setHosts([]);
         }
