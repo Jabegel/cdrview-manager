@@ -1,14 +1,15 @@
-CDRView Manager — Rebuild from zero following the PDF and prototypes.
+# cdrview-manager (Bootstrap + DataTable)
 
-How to run (local):
-1. Install server dependencies:
-   cd server
-   npm install
-2. Start server (serves client on / and api on /api):
-   npm run server
-3. Open browser: http://localhost:3000/
+Projeto com layout claro usando Bootstrap 5, React + Vite e backend Node/Express com persistência em JSON.
+Tabelas usam react-data-table-component (DataTable estilo React).
 
-Notes:
-- Server runs in local mode by default (server/config/server-config.json).
-- Client is a static SPA in client/index.html adapted from your prototype.
-- Endpoints implemented: /api/configuracoes (GET/POST/PUT/DELETE), /api/processos (list/iniciar/parar), /api/processos/iniciar-multiplos, /api/processos/parar-multiplos, /api/processos/details, /api/processo/configuracao/hosts, /api/processo/configuracao/centrais
+## Como rodar
+1. `npm install`
+2. `npm run server`  (backend em http://localhost:3000)
+3. `npm run dev`     (frontend em http://localhost:5173)
+
+## Páginas
+- /processos - lista de processos (DataTable), ações Iniciar/Parar
+- /configuracoes - CRUD de configurações (DataTable + modal)
+
+Dados persistidos em `server/database/*.json`.
