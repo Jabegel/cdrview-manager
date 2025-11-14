@@ -22,7 +22,7 @@ async function proxyPost(path, body){ const url = `${CDRVIEW_BASE}${path}`; cons
 
 // Hosts
 export async function listarHosts(req,res){
-  if(USE_MOCK) return res.json({ servidores: mock_servidores });
+  if(USE_MOCK) return res.json({ servidores: mock_servidores.map(h => ({ label: h, value: h })) });
   try{ const data = await proxyGet('/processo/configuracao/hosts'); return res.json(data); }catch(e){ return res.status(502).json({ error: 'Erro proxy hosts', details: e.message }); }
 }
 
