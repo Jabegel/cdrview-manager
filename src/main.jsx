@@ -1,40 +1,36 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import Start from './pages/Start/Start'
-import Stop from './pages/Stop/Stop'
-import List from './pages/List/List'
-import Configs from './pages/Configs/Configs'
-import Details from './pages/Details/Details'
+import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom'
+import Processos from './pages/Processos/Processos'
+import Configuracoes from './pages/Config/Configuracoes'
+import 'bootstrap/dist/css/bootstrap.min.css'
 
-function App() {
+function Sidebar() {
   return (
-    <div style={{padding:20,fontFamily:'Arial'}}>
-      <h1>CDRView Manager (local)</h1>
-      <div style={{display:'flex',gap:20}}>
-        <div style={{flex:1,border:'1px solid #ddd',padding:10}}>
-          <h2>Start</h2>
-          <Start />
-        </div>
-        <div style={{flex:1,border:'1px solid #ddd',padding:10}}>
-          <h2>Stop</h2>
-          <Stop />
-        </div>
-        <div style={{flex:1,border:'1px solid #ddd',padding:10}}>
-          <h2>List</h2>
-          <List />
-        </div>
-      </div>
-      <div style={{display:'flex',gap:20, marginTop:20}}>
-        <div style={{flex:1,border:'1px solid #ddd',padding:10}}>
-          <h2>Configs</h2>
-          <Configs />
-        </div>
-        <div style={{flex:1,border:'1px solid #ddd',padding:10}}>
-          <h2>Details</h2>
-          <Details />
-        </div>
-      </div>
+    <div className="bg-light vh-100 p-3" style={{width:240}}>
+      <h4>CDRView</h4>
+      <ul className="nav flex-column">
+        <li className="nav-item"><Link className="nav-link" to="/processos">Processos</Link></li>
+        <li className="nav-item"><Link className="nav-link" to="/configuracoes">Configurações</Link></li>
+      </ul>
     </div>
+  )
+}
+
+function App(){
+  return (
+    <BrowserRouter>
+      <div className="d-flex">
+        <Sidebar />
+        <div className="flex-fill p-4">
+          <Routes>
+            <Route path="/" element={<Navigate to="/processos" replace />} />
+            <Route path="/processos" element={<Processos />} />
+            <Route path="/configuracoes" element={<Configuracoes />} />
+          </Routes>
+        </div>
+      </div>
+    </BrowserRouter>
   )
 }
 

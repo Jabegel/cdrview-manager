@@ -1,7 +1,15 @@
-# cdrview-manager
+# cdrview-manager (Bootstrap + DataTable)
 
-Projeto unificado (Frontend React + Backend Node/Express) que reúne as funcionalidades Start, Stop, List e Configurações.
+Projeto com layout claro usando Bootstrap 5, React + Vite e backend Node/Express com persistência em JSON.
+Tabelas usam react-data-table-component (DataTable estilo React).
 
-Backend roda na porta 3000 por padrão. Frontend (Vite) roda na porta 5173 e está configurado para proxar `/api` para o backend local.
+## Como rodar
+1. `npm install`
+2. `npm run server`  (backend em http://localhost:3000)
+3. `npm run dev`     (frontend em http://localhost:5173)
 
-Persistência local em JSON: `server/database/configs.json` e `server/database/processos.json`.
+## Páginas
+- /processos - lista de processos (DataTable), ações Iniciar/Parar
+- /configuracoes - CRUD de configurações (DataTable + modal)
+
+Dados persistidos em `server/database/*.json`.
