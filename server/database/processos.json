@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "id": 1,
+    "configId": 1,
+    "pid": 1234,
+    "servidor": "Machine01",
+    "status": "running",
+    "inicio": "2025-10-10 10:00",
+    "duracao": "2h",
+    "configNome": "p_cfgHUAWEI",
+    "processo": "parsergen.exe",
+    "argumentos": "--type=cdr --central=HBBH"
+  }
+]

@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "id": 1,
+    "nome": "p_cfgHUAWEI",
+    "exe": "parsergen.exe",
+    "servidor": "Machine01",
+    "central": "HBBH",
+    "argumentos": "--type=cdr --central=HBBH"
+  }
+]
