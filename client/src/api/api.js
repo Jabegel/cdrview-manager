@@ -1,11 +1,45 @@
+import axios from "axios";
 
-import axios from 'axios';
-const API = axios.create({baseURL:"http://localhost:4000/cdrview"});
+const apiBase = "/cdrview";
 
 export default {
- listarProcessos:async()=> (await API.post('/processo/listar',{})).data,
- iniciar:async(b)=> (await API.post('/processo/iniciar',b)).data,
- parar:async(b)=> (await API.post('/processo/parar',b)).data,
- listarHosts:async()=> (await API.get('/processo/configuracao/hosts')).data,
- listarConfigs:async()=> (await API.get('/processo/configuracao')).data
+  async listarHosts() {
+    const res = await axios.get(`${apiBase}/processo/configuracao/hosts`);
+    return res.data;
+  },
+
+  async listarCentrais(host) {
+    const res = await axios.get(`${apiBase}/processo/configuracao/centrais/${host}`);
+    return res.data;
+  },
+
+  async getConfiguracoes() {
+    const res = await axios.get(`${apiBase}/processo/configuracao`);
+    return res.data;
+  },
+
+  async salvarConfig(conf) {
+    return axios.post(`${apiBase}/processo/configuracao`, {
+      configuracao: [conf]
+    });
+  },
+
+  async deletarConfig(nome) {
+    return axios.delete(`${apiBase}/processo/configuracao/${encodeURIComponent(nome)}`);
+  },
+
+  async iniciarProcesso(body) {
+    const res = await axios.post(`${apiBase}/processo/iniciar`, body);
+    return res.data;
+  },
+
+  async listarProcessos() {
+    const res = await axios.post(`${apiBase}/processo/listar`, {});
+    return res.data;
+  },
+
+  async pararProcesso(body) {
+    const res = await axios.post(`${apiBase}/processo/parar`, body);
+    return res.data;
+  }
 };

@@ -1,4 +1,3 @@
-
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -12,4 +11,4 @@ app.use(express.json());
 app.use('/cdrview', cdrviewRoutes);
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log("SERVER OK"));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

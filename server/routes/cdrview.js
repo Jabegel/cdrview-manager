@@ -1,12 +1,19 @@
-
 import { Router } from 'express';
-import * as c from '../controllers/cdrviewController.js';
-const r=Router();
+import * as ctrl from '../controllers/cdrviewController.js';
 
-r.get('/processo/configuracao/hosts',c.listarHosts);
-r.get('/processo/configuracao',c.getConfiguracoes);
-r.post('/processo/iniciar',c.iniciarProcesso);
-r.post('/processo/listar',c.listarProcessos);
-r.post('/processo/parar',c.pararProcesso);
+const router = Router();
 
-export default r;
+// configuration endpoints (GET, POST, DELETE)
+router.get('/processo/configuracao/hosts', ctrl.listarHosts);
+router.get('/processo/configuracao/centrais', ctrl.listarCentrais);
+router.get('/processo/configuracao/centrais/:host', ctrl.listarCentraisPorHost);
+router.get('/processo/configuracao', ctrl.getConfiguracoes);
+router.post('/processo/configuracao', ctrl.salvarConfig);
+router.delete('/processo/configuracao/:nome', ctrl.deletarConfig);
+
+// process endpoints
+router.post('/processo/iniciar', ctrl.iniciarProcesso);
+router.post('/processo/listar', ctrl.listarProcessos);
+router.post('/processo/parar', ctrl.pararProcesso);
+
+export default router;
