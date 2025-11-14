@@ -1,15 +1,17 @@
-# cdrview-manager (Bootstrap + DataTable)
+# cdrview-manager (Complete - matches PDF)
 
-Projeto com layout claro usando Bootstrap 5, React + Vite e backend Node/Express com persistência em JSON.
-Tabelas usam react-data-table-component (DataTable estilo React).
+Projeto completo com telas Iniciar, Parar, Listar, Detalhes e Configurações.
+Backend local com JSON persistence e modo `remote` que faz proxy para os endpoints reais do CDRView.
 
-## Como rodar
-1. `npm install`
-2. `npm run server`  (backend em http://localhost:3000)
-3. `npm run dev`     (frontend em http://localhost:5173)
+Endpoints reais esperados (conforme PDF):
+- POST http://{host}:{port}/cdrview/processo/iniciar
+- POST http://{host}:{port}/cdrview/processo/parar
+- POST http://{host}:{port}/cdrview/processo/listar
+- GET  http://{host}:{port}/cdrview/processo/configuracao
+- GET  http://{host}:{port}/cdrview/processo/configuracao/hosts
+- GET  http://{host}:{port}/cdrview/processo/configuracao/centrais
 
-## Páginas
-- /processos - lista de processos (DataTable), ações Iniciar/Parar
-- /configuracoes - CRUD de configurações (DataTable + modal)
-
-Dados persistidos em `server/database/*.json`.
+Como rodar:
+1. npm install
+2. npm run server
+3. npm run dev

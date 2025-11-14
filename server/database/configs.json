@@ -3,7 +3,7 @@
     "id": 1,
     "nome": "p_cfgHUAWEI",
     "exe": "parsergen.exe",
-    "servidor": "host1",
+    "servidor": "Machine01",
     "central": "HBBH",
     "argumentos": "--type=cdr --central=HBBH"
   }
