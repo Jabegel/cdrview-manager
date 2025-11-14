@@ -1,5 +1,5 @@
 {
   "mode": "local",
-  "host": "teste1",
+  "host": "localhost",
   "port": 6869
 }

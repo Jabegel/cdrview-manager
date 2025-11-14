@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CDRView Manager</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
+    .sidebar { background-color: #1a3a5e; color: white; height: 100vh; padding: 20px; }
+    .sidebar .nav-link { color: #ccc; padding: 10px 15px; border-radius: 5px; }
+    .sidebar .nav-link:hover, .sidebar .nav-link.active { color: white; background-color: #2c5a8a; }
+    .content { padding: 20px; }
+    .badge-running { background-color: #28a745; }
+    .badge-stopped { background-color: #dc3545; }
+    .action-btn { font-size: 0.85rem; }
+    .bulk-actions { margin: 15px 0; display: none; }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-md-2 sidebar">
+        <h4 class="text-white mb-4">CDRView Manager</h4>
+        <ul class="nav flex-column">
+          <li class="nav-item"><a class="nav-link" href="#" data-screen="list-processes">Processos</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" data-screen="list-configs">Configurações</a></li>
+        </ul>
+      </div>
+
+      <!-- Conteúdo Dinâmico -->
+      <div class="col-md-10 content" id="main-content">
+        <div id="screen-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
+
+  <!-- DADOS MOCKADOS -->
+  <script>
+    // === CONFIGURAÇÕES (do CRUD) ===
+    let configuracoes = null; /* loaded from backend */
+      { id: 1, nome: "p_cfgHUAWEI", exe: "parsergen.exe", servidor: "host1", central: "HBBH", argumentos: "--type=cdr --central=HBBH" },
+      { id: 2, nome: "p_cfgERIC", exe: "parsergen.exe", servidor: "host2", central: "ERIC", argumentos: "--type=cdr --central=ERIC" }
+    ];
+
+    // === PROCESSOS EM EXECUÇÃO (simulado) ===
+    let processos = null; /* loaded from backend */
+      { id: 1, configId: 1, pid: 1234, servidor: "host1", status: "running", inicio: "2025-10-31 10:00" },
+      { id: 2, configId: 2, pid: 5678, servidor: "host2", status: "stopped", inicio: null }
+    ];
+
+    // Servidores e centrais (para filtro no CRUD)
+    const servidores = [
+      { id: 1, nome: "host1" },
+      { id: 2, nome: "host2" },
+      { id: 3, nome: "host3" }
+    ];
+
+    const centraisPorServidor = {
+      1: ["HBBH", "HUW23", "ERIC"],
+      2: ["ERIC", "ALU1", "ZTE"],
+      3: ["HBBH", "ALU2"]
+    };
+  </script>
+
+  <!-- TELA: LISTAGEM DE PROCESSOS -->
+  <script id="template-list-processes" type="text/html">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Processos em Execução</h2>
+      <button class="btn btn-outline-secondary" onclick="atualizarProcessos()">Atualizar</button>
+    </div>
+
+    <!-- Ações em Lote -->
+    <div class="bulk-actions" id="bulkActions">
+      <div class="alert alert-info">
+        <strong id="selectedCount">0</strong> processo(s) selecionado(s)
+        <button class="btn btn-success btn-sm ms-3" onclick="iniciarSelecionados()">Iniciar Selecionados</button>
+        <button class="btn btn-danger btn-sm" onclick="pararSelecionados()">Parar Selecionados</button>
+      </div>
+    </div>
+
+    <table id="processosTable" class="table table-striped table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th><input type="checkbox" id="selectAll"></th>
+          <th>Nome Config</th>
+          <th>Processo</th>
+          <th>PID</th>
+          <th>Servidor</th>
+          <th>Status</th>
+          <th>Argumentos</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </script>
+
+  <!-- TELA: CONFIGURAÇÕES (CRUD) - Mesma do anterior -->
+  <script id="template-list-configs" type="text/html">
+    <!-- ... (mesmo do protótipo anterior) ... -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Configurações de Processos</h2>
+      <button class="btn btn-success" onclick="abrirFormConfig()">Nova Configuração</button>
+    </div>
+    <table id="configsTable" class="table table-striped table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Nome da Config</th>
+          <th>Processo (.exe)</th>
+          <th>Servidor</th>
+          <th>Central</th>
+          <th>Argumentos</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </script>
+
+  <!-- TELA: FORM CONFIG -->
+  <script id="template-form-config" type="text/html">
+    <!-- ... (mesmo do anterior) ... -->
+    <div class="card">
+      <div class="card-header"><h4 id="form-title">Nova Configuração</h4></div>
+      <div class="card-body">
+        <form id="formConfig">
+          <input type="hidden" id="configId">
+          <div class="mb-3">
+            <label class="form-label">Nome da Configuração</label>
+            <input type="text" class="form-control" id="nomeConfig" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Processo (.exe)</label>
+            <input type="text" class="form-control" id="nomeExe" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Servidor</label>
+            <select class="form-select" id="servidorSelect" required></select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Central</label>
+            <select class="form-select" id="centralSelect" required disabled></select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Argumentos</label>
+            <input type="text" class="form-control" id="argumentos" placeholder="--type=cdr --central=HBBH">
+          </div>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+          <button type="button" class="btn btn-secondary" onclick="voltarParaLista()">Cancelar</button>
+        </form>
+      </div>
+    </div>
+  </script>
+
+  <!-- JS PRINCIPAL -->
+  <script>
+    // Navegação
+    $(document).on('click', '.nav-link', function(e) {
+      e.preventDefault();
+      const screen = $(this).data('screen');
+      carregarTela(screen);
+    });
+
+    function carregarTela(screen) {
+      let template = '';
+      if (screen === 'list-processes') {
+        template = $('#template-list-processes').html();
+        $('#screen-container').html(template);
+        carregarListaProcessos();
+      } else if (screen === 'list-configs') {
+        template = $('#template-list-configs').html();
+        $('#screen-container').html(template);
+        carregarListaConfiguracoes();
+      } else if (screen === 'form-config') {
+        template = $('#template-form-config').html();
+        $('#screen-container').html(template);
+        inicializarFormConfig();
+      }
+      $('.nav-link').removeClass('active');
+      $(`.nav-link[data-screen="${screen}"]`).addClass('active');
+    }
+
+    // === LISTAGEM DE PROCESSOS ===
+    function carregarListaProcessos() {
+      const tbody = $('#processosTable tbody');
+      tbody.empty();
+
+      processos.forEach(proc => {
+        const config = configuracoes.find(c => c.id === proc.configId) || {};
+        const statusBadge = proc.status === 'running'
+          ? '<span class="badge badge-running">Running</span>'
+          : '<span class="badge badge-stopped">Stopped</span>';
+
+        const btnIniciar = proc.status === 'stopped'
+          ? `<button class="btn btn-success btn-sm action-btn" onclick="iniciarProcesso(${proc.id})">Iniciar</button>`
+          : '';
+        const btnParar = proc.status === 'running'
+          ? `<button class="btn btn-danger btn-sm action-btn" onclick="pararProcesso(${proc.id})">Parar</button>`
+          : '';
+
+        tbody.append(`
+          <tr>
+            <td><input type="checkbox" class="row-select" data-id="${proc.id}"></td>
+            <td>${config.nome || '-'}</td>
+            <td>${config.exe || '-'}</td>
+            <td>${proc.pid || '-'}</td>
+            <td>${proc.servidor}</td>
+            <td>${statusBadge}</td>
+            <td><small>${config.argumentos || '-'}</small></td>
+            <td>${btnIniciar} ${btnParar}</td>
+          </tr>
+        `);
+      });
+
+      $('#processosTable').DataTable({ destroy: true, paging: true, searching: true });
+
+      // Seleção múltipla
+      $('#selectAll').off('change').on('change', function() {
+        $('.row-select').prop('checked', this.checked);
+        atualizarBulkActions();
+      });
+
+      $('.row-select').off('change').on('change', atualizarBulkActions);
+    }
+
+    function atualizarBulkActions() {
+      const selected = $('.row-select:checked').length;
+      $('#selectedCount').text(selected);
+      $('#bulkActions').toggle(selected > 0);
+    }
+
+    function iniciarProcesso(id) {
+      const proc = processos.find(p => p.id === id);
+      if (proc && proc.status === 'stopped') {
+        proc.status = 'running';
+        proc.pid = Math.floor(Math.random() * 9000) + 1000;
+        proc.inicio = new Date().toLocaleString();
+        alert(`Processo iniciado: PID ${proc.pid} em ${proc.servidor}`);
+        carregarListaProcessos();
+      }
+    }
+
+    function pararProcesso(id) {
+      const proc = processos.find(p => p.id === id);
+      if (proc && proc.status === 'running') {
+        proc.status = 'stopped';
+        proc.pid = null;
+        alert(`Processo parado em ${proc.servidor}`);
+        carregarListaProcessos();
+      }
+    }
+
+    function iniciarSelecionados() {
+      $('.row-select:checked').each(function() {
+        const id = parseInt($(this).data('id'));
+        iniciarProcesso(id);
+      });
+    }
+
+    function pararSelecionados() {
+      $('.row-select:checked').each(function() {
+        const id = parseInt($(this).data('id'));
+        pararProcesso(id);
+      });
+    }
+
+    function atualizarProcessos() {
+      alert('Atualizando status do cluster...');
+      carregarListaProcessos();
+    }
+
+    // === CRUD CONFIGURAÇÕES (resumido) ===
+    function carregarListaConfiguracoes() {
+      const tbody = $('#configsTable tbody');
+      tbody.empty();
+      configuracoes.forEach(cfg => {
+        tbody.append(`
+          <tr>
+            <td>${cfg.nome}</td>
+            <td>${cfg.exe}</td>
+            <td>${cfg.servidor}</td>
+            <td>${cfg.central}</td>
+            <td><small>${cfg.argumentos || '-'}</small></td>
+            <td>
+              <button class="btn btn-sm btn-warning" onclick="editarConfig(${cfg.id})">Editar</button>
+              <button class="btn btn-sm btn-danger" onclick="excluirConfig(${cfg.id})">Excluir</button>
+            </td>
+          </tr>
+        `);
+      });
+      $('#configsTable').DataTable({ destroy: true });
+    }
+
+    function abrirFormConfig(id = null) {
+      carregarTela('form-config');
+      // ... (mesma lógica do anterior)
+      const selectServidor = $('#servidorSelect');
+      selectServidor.empty().append('<option value="">Selecione</option>');
+      servidores.forEach(s => selectServidor.append(`<option value="${s.id}">${s.nome}</option>`));
+      $('#servidorSelect').on('change', () => {
+        const id = $('#servidorSelect').val();
+        const selectCentral = $('#centralSelect').empty().append('<option value="">Selecione</option>').prop('disabled', true);
+        if (id && centraisPorServidor[id]) {
+          centraisPorServidor[id].forEach(c => selectCentral.append(`<option>${c}</option>`));
+          selectCentral.prop('disabled', false);
+        }
+      });
+
+      if (id) {
+        const cfg = configuracoes.find(c => c.id === id);
+        $('#form-title').text('Editar Configuração');
+        $('#configId').val(cfg.id);
+        $('#nomeConfig').val(cfg.nome);
+        $('#nomeExe').val(cfg.exe);
+        $('#servidorSelect').val(servidores.find(s => s.nome === cfg.servidor)?.id);
+        $('#servidorSelect').trigger('change');
+        setTimeout(() => $('#centralSelect').val(cfg.central), 100);
+        $('#argumentos').val(cfg.argumentos);
+      }
+
+      $('#formConfig').off('submit').on('submit', function(e) {
+        e.preventDefault();
+        const id = $('#configId').val();
+        const config = {
+          id: id ? parseInt(id) : Date.now(),
+          nome: $('#nomeConfig').val().trim(),
+          exe: $('#nomeExe').val().trim(),
+          servidor: servidores.find(s => s.id == $('#servidorSelect').val())?.nome,
+          central: $('#centralSelect').val(),
+          argumentos: $('#argumentos').val().trim()
+        };
+        if (id) {
+          const idx = configuracoes.findIndex(c => c.id === parseInt(id));
+          configuracoes[idx] = config;
+        } else {
+          configuracoes.push(config);
+          // Criar processo associado
+          processos.push({
+            id: Date.now(),
+            configId: config.id,
+            pid: null,
+            servidor: config.servidor,
+            status: 'stopped',
+            inicio: null
+          });
+        }
+        alert('Configuração salva!');
+        carregarTela('list-configs');
+      });
+    }
+
+    function editarConfig(id) { abrirFormConfig(id); }
+    function excluirConfig(id) {
+      if (confirm('Excluir?')) {
+        configuracoes = configuracoes.filter(c => c.id !== id);
+        processos = processos.filter(p => p.configId !== id);
+        carregarListaConfiguracoes();
+      }
+    }
+    function voltarParaLista() { carregarTela('list-configs'); }
+
+    // Iniciar
+    $(document).ready(function() {
+      carregarTela('list-processes');
+    });
+  </script>
+</body>
+</html>
