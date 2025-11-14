@@ -1,7 +1,0 @@
-:root { --sidebar-bg:#1a3a5e; --sidebar-hover:#2c5a8a; --text-muted:#ccc; }
-body { background:#f8f9fa; font-family: 'Segoe UI', sans-serif; }
-.sidebar { background:var(--sidebar-bg); color:#fff; width:220px; min-height:100vh; padding:20px; }
-.nav-link { color:var(--text-muted); display:block; padding:10px; border-radius:6px; background:transparent; border:none; text-align:left; }
-.nav-link:hover { background:var(--sidebar-hover); color:#fff; }
-.table thead.table-dark th { background:rgba(0,0,0,0.6); color:#fff; }
-.card { border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
