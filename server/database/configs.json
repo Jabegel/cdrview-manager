@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "nome": "p_cfgHUAWEI",
+    "exe": "parsergen.exe",
+    "servidor": "host1",
+    "central": "HBBH",
+    "argumentos": "--type=cdr --central=HBBH"
+  },
+  {
+    "id": 1763080634526,
+    "nome": "asss",
+    "exe": "aaaa",
+    "servidor": "bbbbbb",
+    "central": "asdada",
+    "argumentos": ""
+  }
+]
