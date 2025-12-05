@@ -9,10 +9,10 @@
   },
   {
     "id": 1763080634526,
-    "nome": "asss",
-    "exe": "aaaa",
-    "servidor": "bbbbbb",
-    "central": "asdada",
-    "argumentos": ""
+    "nome": "p_cfgHUAWEIs",
+    "exe": "parsergen.exe",
+    "servidor": "host2",
+    "central": "HBBHA",
+    "argumentos": "--type=cdr --central=HBBHA"
   }
 ]

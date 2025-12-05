@@ -5,7 +5,7 @@
     "pid": null,
     "servidor": "host1",
     "status": "stopped",
-    "inicio": "14/11/2025, 00:09:07",
+    "inicio": "05/12/2025, 10:24:12",
     "configNome": "p_cfgHUAWEI",
     "processo": "parsergen.exe",
     "argumentos": "--type=cdr --central=HBBH"
@@ -14,11 +14,11 @@
     "id": 1763080634527,
     "configId": 1763080634526,
     "pid": null,
-    "servidor": "bbbbbb",
+    "servidor": "host2",
     "status": "stopped",
-    "inicio": "13/11/2025, 21:37:27",
-    "configNome": "asss",
-    "processo": "aaaa",
-    "argumentos": ""
+    "inicio": "05/12/2025, 10:14:50",
+    "configNome": "p_cfgHUAWEI_2",
+    "processo": "parsergen.exe",
+    "argumentos": "--type=cdr --central=HBBH_2"
   }
 ]
