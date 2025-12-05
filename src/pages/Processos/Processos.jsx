@@ -50,49 +50,48 @@ export default function Processos(){
   }
 
   async function stop(proc){
-    if(!confirm('Parar o processo?')) return;
-    
-    const hostEnvio = proc.servidor || proc.host || "visentucb";
+    if(!confirm(`Deseja parar o processo "${proc.nome || proc.processo}"?`)) return;
 
-    const processoNome = proc.nome || proc.processo || "parsergen_Huawei.exe";
-
-    const argsBrutos = proc.argumentos || "";
+    const hostCorrigido = (proc.servidor || proc.host || "VISENTUCB").toUpperCase();
+    const processoNome = proc.nome || proc.processo;
+    const args = proc.argumentos || "";
 
     const payload = {
-        "host": hostEnvio,
-        "processo": processoNome,
-        "argumento": argsBrutos,
-        "argumentos": argsBrutos
-    }
+        host: hostCorrigido,
+        processo: processoNome,
+        argumento: args,
+        argumentos: args
+    };
 
-    console.log("Tentando parar (Host Corrigido):", payload)
+    console.log("Payload enviado para parar:", payload);
 
     try {
         const resp = await fetch('/api/processo/parar', {
-            method:'POST', 
-            headers:{'Content-Type':'application/json'}, 
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
             body: JSON.stringify(payload)
-        })
+        });
 
-        if(resp.ok) {
-            alert("Comando enviado! Aguardando fechamento...")
-            
+        const text = await resp.text();
+        console.log("Resposta do servidor:", text);
+
+        if(resp.ok){
+            alert("Comando enviado! Aguardando fechamento...");
             let tentativas = 0;
-            const intervalo = setInterval(() => {
-                fetchList();
+            const intervalo = setInterval(async () => {
+                await fetchList();
                 tentativas++;
-                if (tentativas >= 15) clearInterval(intervalo);
+                if(tentativas >= 15) clearInterval(intervalo);
             }, 2000);
         } else {
-            const text = await resp.text()
-            console.error("Erro backend:", text)
-            alert("Erro ao parar: " + text)
+            alert("Erro ao parar: " + text);
         }
-    } catch (e) {
-        console.error(e)
-        alert("Erro de conexão ao tentar parar.")
+    } catch(e){
+        console.error(e);
+        alert("Erro de conexão ao tentar parar.");
     }
-  }
+}
+
 
   const columns = useMemo(()=>[
     { name: 'Nome Config', selector: row => row.configNome || row.nome || '-', sortable: true },
